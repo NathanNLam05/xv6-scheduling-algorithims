@@ -459,7 +459,7 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
-        int session_start = p->duration;
+        int session_start = r_time();
         p->context_switches = p->context_switches + 1;
         if (p->first_run == -1){
           p->first_run = r_time();
@@ -472,7 +472,7 @@ scheduler(void)
 
         // Process is done running for now.
         // It should have changed its p->state before coming back.
-        p->duration = p->duration + (r_time() - session_start);
+        p->duration += r_time() - session_start;
 
         c->proc = 0;
         found = 1;
