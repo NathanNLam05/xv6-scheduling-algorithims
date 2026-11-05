@@ -462,14 +462,12 @@ sys_childstats(void)
         //          //return -1;
         //        }
         pp->parent = 0;
-        freeproc(pp);
-        release(&pp->lock);
-        release(&wait_lock);
         //return pid;
       }
       release(&pp->lock);
     }
   }
+  release(&wait_lock);
   return numzombies;
 
   //    // No point waiting if we don't have any children.
