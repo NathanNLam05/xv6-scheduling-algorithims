@@ -125,6 +125,12 @@ found:
   p->pid = allocpid();
   p->state = USED;
 
+  p->context_switches = 0;
+  p->arrival = r_time();
+  p->duration = 0;
+  p->first_run = -1;
+
+
   // Allocate a trapframe page.
   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
     freeproc(p);
@@ -327,8 +333,11 @@ kexit(int status)
 {
   struct proc *p = myproc();
 
+  p->completion = r_time();
+
   if (p == initproc)
     panic("init exiting");
+    
 
   // Close all open files.
   for (int fd = 0; fd < NOFILE; fd++) {
@@ -510,6 +519,12 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+        int session_start = r_time();
+        p->context_switches = p->context_switches + 1;
+        if (p->first_run == -1){
+          p->first_run = r_time();
+        }
+
         swtch(&c->context, &p->context);
 
         // Don't re-enable interrupts on release.
@@ -517,6 +532,8 @@ scheduler(void)
 
         // Process is done running for now.
         // It should have changed its p->state before coming back.
+        p->duration += r_time() - session_start;
+
         c->proc = 0;
         found = 1;
       }
@@ -552,6 +569,7 @@ sched(void)
     panic("sched interruptible");
 
   intena = mycpu()->intena;
+  p->context_switches = p->context_switches + 1;
   swtch(&p->context, &mycpu()->context);
   mycpu()->intena = intena;
 }
