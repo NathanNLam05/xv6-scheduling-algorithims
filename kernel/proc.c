@@ -425,63 +425,76 @@ kwait(uint64 addr)
   }
 }
 
+// Scheduling information for the process
+struct procstats {
+  int arrival;
+  int first_run;
+  int duration;
+  int completion;
+  int context_switches;
+};
+
 // scan children for zombies, takes in the address of a chidlstats struct (for now it just prints) each and then returns the number of children that are zombies
 uint64
 sys_childstats(void)
 {
+  int pid;
+  uint64 addr;
+  struct procstats stats;
+
+  struct proc *p = myproc();
   struct proc *pp;
   // int havekids, pid;
-  int numzombies;
-  struct proc *p = myproc();
+  //  int numzombies;
 
+  // load arguments
+  argint(0, &pid);
+  argaddr(1, &addr);
   acquire(&wait_lock);
 
   // Scan through table looking for children that are zombies
-  numzombies = 0;
+  //  numzombies = 0;
   //  havekids = 0;
   for (pp = proc; pp < &proc[NPROC]; pp++) {
-    if (pp->parent == p) {
+    if (pp->pid == pid && pp->state == ZOMBIE) {
       // make sure the child isn't still in exit() or swtch().
       acquire(&pp->lock);
+      stats.arrival = pp->arrival;
+      stats.completion = pp->completion;
+      stats.duration = pp->duration;
+      stats.first_run = pp->first_run;
+      stats.context_switches = pp->context_switches;
+      copyout(p->pagetable, p->sz, addr, (char *)&stats, sizeof(stats));
 
       //     havekids = 1;
-      if (pp->state == ZOMBIE) {
-        // Found one.
-        //      pid = pp->pid;
-        numzombies++;
-        printk("hit childstats for process %d:\n- %d %d %d %d %d", pp->pid,
-               pp->arrival, pp->completion, pp->duration, pp->first_run,
-               pp->context_switches);
-        //        char letter = 'a';
-        //        write(0, &letter, 1);
+      //      if (pp->state == ZOMBIE) {
+      //        numzombies++;
+      // Found one.
+      //      pid = pp->pid;
 
-        //        if (addr != 0 && copyout(p->pagetable, p->sz, addr, (char *)&pp->xstate,
-        //                                 sizeof(pp->xstate)) < 0) {
-        //          release(&pp->lock);
-        //          release(&wait_lock);
-        //          //return -1;
-        //        }
-        pp->parent = 0;
-        //return pid;
-      }
+      //       printk("hit childstats for process %d:\n- %d %d %d %d %d", pp->pid,
+      //              pp->arrival, pp->completion, pp->duration, pp->first_run,
+      //              pp->context_switches);
       release(&pp->lock);
+      release(&wait_lock);
+      return 0;
     }
   }
   release(&wait_lock);
-  return numzombies;
-
-  //    // No point waiting if we don't have any children.
-  //    if (!havekids || killed(p)) {
-  //      release(&wait_lock);
-  //      return -1;
-  //    }
-  //
-  //    // Wait for a child to exit.
-  //    sleep_prepare(p); //DOC: wait-sleep
-  //    release(&wait_lock);
-  //    sleep();
-  //    acquire(&wait_lock);
+  return -1;
 }
+
+//    // No point waiting if we don't have any children.
+//    if (!havekids || killed(p)) {
+//      release(&wait_lock);
+//      return -1;
+//    }
+//
+//    // Wait for a child to exit.
+//    sleep_prepare(p); //DOC: wait-sleep
+//    release(&wait_lock);
+//    sleep();
+//    acquire(&wait_lock);
 
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
