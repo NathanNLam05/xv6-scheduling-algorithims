@@ -86,7 +86,8 @@ struct proc {
   int arrival;
   int first_run;
   int duration;
-  int completion;
+  int completion; 
+  int context_switches;
 
   // p->lock must be held when using these:
   enum procstate state; // Process state
