@@ -31,7 +31,7 @@ childstats(uint64 addr)
         pid = pp->pid;
         numzombies++;
         printf("hello, %d %d %d %d %d\n", pp->arrival, pp->first_run,
-               pp->completion, pp->duration, pp->num_context_switches);
+               pp->completion, pp->duration, pp->context_switches);
 
         //        if (addr != 0 && copyout(p->pagetable, p->sz, addr, (char *)&pp->xstate,
         //                                 sizeof(pp->xstate)) < 0) {
