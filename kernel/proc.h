@@ -101,4 +101,9 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  int arrival;                 // Process start time
+  int first_run;               // Process first run
+  int completion;              // Completion
+  int duration;                // Duration
+  int num_context_switches;    // Number of context switches
 };
