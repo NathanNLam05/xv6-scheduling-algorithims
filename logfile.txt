@@ -1,0 +1,11 @@
+arrival=94248108 first_run=94267809 duration=57095 completion=94323296 context_switches=2
+arrival=94250480 first_run=94324962 duration=10367 completion=94334398 context_switches=2
+arrival=94252400 first_run=94327152 duration=2468116 completion=96797272 context_switches=8
+arrival=94254260 first_run=94335351 duration=16325 completion=94350002 context_switches=2
+arrival=94256140 first_run=94337477 duration=19734 completion=94423458 context_switches=6
+arrival=94258237 first_run=94342820 duration=25581 completion=94366466 context_switches=2
+arrival=94260329 first_run=94351995 duration=22007 completion=94385547 context_switches=4
+arrival=94262107 first_run=94355005 duration=22555 completion=94405219 context_switches=4
+arrival=94263819 first_run=94358148 duration=177228 completion=94534951 context_switches=4
+arrival=94265516 first_run=94406934 duration=9916 completion=94427996 context_switches=4
+
