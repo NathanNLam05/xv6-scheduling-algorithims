@@ -130,7 +130,6 @@ found:
   p->duration = 0;
   p->first_run = -1;
 
-
   // Allocate a trapframe page.
   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
     freeproc(p);
@@ -337,7 +336,6 @@ kexit(int status)
 
   if (p == initproc)
     panic("init exiting");
-    
 
   // Close all open files.
   for (int fd = 0; fd < NOFILE; fd++) {
@@ -453,7 +451,7 @@ sys_childstats(void)
         numzombies++;
         printk("hit childstats for process %d:\n- %d %d %d %d %d", pp->pid,
                pp->arrival, pp->completion, pp->duration, pp->first_run,
-               pp->num_context_switches);
+               pp->context_switches);
         //        char letter = 'a';
         //        write(0, &letter, 1);
 
@@ -521,7 +519,7 @@ scheduler(void)
         c->proc = p;
         int session_start = r_time();
         p->context_switches = p->context_switches + 1;
-        if (p->first_run == -1){
+        if (p->first_run == -1) {
           p->first_run = r_time();
         }
 
