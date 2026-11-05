@@ -418,6 +418,66 @@ kwait(uint64 addr)
   }
 }
 
+// scan children for zombies, takes in the address of a chidlstats struct (for now it just prints) each and then returns the number of children that are zombies
+uint64
+sys_childstats(void)
+{
+  struct proc *pp;
+  // int havekids, pid;
+  int numzombies;
+  struct proc *p = myproc();
+
+  acquire(&wait_lock);
+
+  // Scan through table looking for children that are zombies
+  numzombies = 0;
+  //  havekids = 0;
+  for (pp = proc; pp < &proc[NPROC]; pp++) {
+    if (pp->parent == p) {
+      // make sure the child isn't still in exit() or swtch().
+      acquire(&pp->lock);
+
+      //     havekids = 1;
+      if (pp->state == ZOMBIE) {
+        // Found one.
+        //      pid = pp->pid;
+        numzombies++;
+        printk("hit childstats for process %d:\n- %d %d %d %d %d", pp->pid,
+               pp->arrival, pp->completion, pp->duration, pp->first_run,
+               pp->num_context_switches);
+        //        char letter = 'a';
+        //        write(0, &letter, 1);
+
+        //        if (addr != 0 && copyout(p->pagetable, p->sz, addr, (char *)&pp->xstate,
+        //                                 sizeof(pp->xstate)) < 0) {
+        //          release(&pp->lock);
+        //          release(&wait_lock);
+        //          //return -1;
+        //        }
+        pp->parent = 0;
+        freeproc(pp);
+        release(&pp->lock);
+        release(&wait_lock);
+        //return pid;
+      }
+      release(&pp->lock);
+    }
+  }
+  return numzombies;
+
+  //    // No point waiting if we don't have any children.
+  //    if (!havekids || killed(p)) {
+  //      release(&wait_lock);
+  //      return -1;
+  //    }
+  //
+  //    // Wait for a child to exit.
+  //    sleep_prepare(p); //DOC: wait-sleep
+  //    release(&wait_lock);
+  //    sleep();
+  //    acquire(&wait_lock);
+}
+
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:

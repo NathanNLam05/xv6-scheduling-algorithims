@@ -1,2 +1,96 @@
 # xv6-scheduling-algorithims
 377 Group 6
+
+## Milestone 2
+
+ 
+
+The goal of this milestone is to build the common measurement infrastructure that will later be used to evaluate all of the scheduling algorithms in the project.
+
+You do not need to implement your assigned algorithms yet. 
+
+ 
+
+By the end of this milestone, your group should understand the parts of xv6 responsible for creating, scheduling, running, and terminating processes. You should also understand how scheduling performance can be measured and what modifications to xv6 are needed to collect those measurements.
+
+ 
+
+The process lifecycle can be summarized as follows: 
+
+ 
+
+UNUSED → USED → RUNNABLE → RUNNING → SLEEPING/RUNNABLE → ZOMBIE
+
+ 
+
+A process may move between RUNNABLE, RUNNING, and SLEEPING many times before it terminates.
+
+ 
+
+As a group, you should study the relevant parts of xv6 and understand where the key events of the lifecycle happen. You may consider starting with kernel/start.c,  kernel/proc.h and kernel/proc.c. 
+
+https://github.com/mit-pdos/xv6-riscv/blob/riscv/kernel/start.c
+
+https://github.com/mit-pdos/xv6-riscv/blob/riscv/kernel/proc.c
+
+https://github.com/mit-pdos/xv6-riscv/blob/riscv/kernel/proc.h
+
+
+
+Modifying xv6
+
+ 
+
+You will need to modify relevant parts of the xv6 code, including data structures or kernel logic, to collect the performance metrics needed for this project. As a group, you will need to figure out what information to collect, where and how to collect it, and how to use that information to evaluate the performance of different scheduling algorithms. You will need to justify your design decisions in the milestone 2 report.
+
+
+
+Remember to keep versions of your code so that you can always go back to previous working versions in case of problems. Your implementation should preserve the existing functionality of xv6. In other words, you should only modify the code to perform the tasks you need while keeping everything else intact.
+
+For example, you may create a system call that allows a parent to collect performance statistics of a child that just completed. Using kernel  printf() statements for debugging is fine, but relying on them to collect experimental data would not be a good design for a measurement tool.
+
+
+
+Experimental Configuration:
+
+ 
+
+You may configure xv6 to use as many CPUs as you want. However, you must report performance metrics when using only one CPU. Using multiple CPUs is encouraged for curiosity but is not required.
+
+We require measurements using one CPU so that we can easily compare the behavior of different scheduling policies under the same experimental conditions.
+
+
+
+Test Programs
+
+
+
+Create at least one user-level test program to demonstrate that your measurement infrastructure works. For example, you may create several child processes, assign them CPU-bound workloads, and collect performance metrics for each.
+
+You should be able to explain your results and why they are reasonable.
+
+You do not need extensive evaluation yet. 
+
+ 
+
+Milestone Deliverables
+
+This is a group milestone, and all members should participate in understanding and modifying the relevant parts of xv6.
+
+
+Submit one PDF containing:
+
+    A brief description of the changes you made to xv6, including any new data structures or code modifications and why they were necessary.
+    Instructions on how to run your test program and collect performance metrics.
+    A screenshot of your test program running in xv6, showing the metrics collected, and a brief explanation of the results.
+    A link to your team's GitHub repository with working Milestone 2 code. Keep your branches and pull requests for teamwork evaluation. 
+
+Every group member should be able to explain the various components of this milestone on their own.
+
+
+### Plans
+
+We will implement two metrics. The kernel will keep track of the creation time of every process, by calling `sys_uptime()` when it gets initialized. We will create a new field in the procstruct (proc.creation_time) and edit this field when the process is first initialized.
+This will be useful in making constraints like response time and turnaround time.
+
+
