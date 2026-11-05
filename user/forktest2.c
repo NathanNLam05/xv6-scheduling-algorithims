@@ -16,21 +16,21 @@ print(const char *s)
 void
 forktest2(void)
 {
-    int pid = fork(); 
+  int pid = fork();
 
-    if (pid < 0) {
-        print("Fork Failed\n");
-        return;
-    } 
-    else if (pid == 0) {
-        print("Hello from Child!\n");
-    } 
-    else {
-        wait(0); 
-        print("Hello from Parent!\n");
-    }
-
+  if (pid < 0) {
+    print("Fork Failed\n");
     return;
+  } else if (pid == 0) {
+    print("Hello from Child!\n");
+  } else {
+    pause(10);
+    childstats();
+    wait(0);
+    print("Hello from Parent!\n");
+  }
+
+  return;
 }
 
 int
